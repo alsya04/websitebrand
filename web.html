@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mochi AR — Toko Online</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#fff9f7;
+      --card:pink;
+      --text:#3b2d2a;
+      --muted:#7a5d56;
+      --accent:#ff6b6b;
+      --accent-2:pink;
+      --line:#f1e5e1;
+      --ok:#14b8a6;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    a{text-decoration:none;color:inherit}
+    img{max-width:100%;display:block}
+    .container{max-width:1100px;margin:0 auto;padding:20px}
+    /* Header */
+    header{
+      position:sticky;top:0;z-index:10;background:rgba(255,249,247,.8);backdrop-filter:saturate(180%) blur(8px);
+      border-bottom:1px solid var(--line)
+    }
+    .nav{
+      display:flex;align-items:center;gap:16px;justify-content:space-between;padding:12px 20px
+    }
+    .brand{
+      display:flex;align-items:center;gap:12px
+    }
+    .logo{
+      width:40px;height:40px;border-radius:50%;background:radial-gradient(circle at 65% 35%, var(--accent) 0 35%, var(--accent-2) 36% 70%, #ffdede 71%);
+      box-shadow:inset 0 0 0 2px #8b5a54
+    }
+    .brand h1{
+      font-family:"Playfair Display",serif;font-weight:700;margin:0;font-size:1.4rem;letter-spacing:.3px
+    }
+    .nav-right{display:flex;gap:10px;align-items:center}
+    .btn{
+      padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);
+      display:inline-flex;gap:8px;align-items:center;font-weight:600
+    }
+    .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+    .btn.small{padding:8px 12px;font-weight:600}
+    .badge{
+      background:#fff;color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:2px 8px;font-size:.75rem
+    }
+    /* Hero */
+    .hero{
+      display:grid;grid-template-columns:1.1fr .9fr;gap:26px;align-items:center;padding:26px 20px
+    }
+    .hero-card{
+      background:linear-gradient(180deg,#fff 0,#fff7f5 100%);border:1px solid var(--line);border-radius:16px;padding:24px
+    }
+    .hero h2{font-family:"Playfair Display",serif;font-size:2.2rem;margin:0 0 8px}
+    .hero p{color:var(--muted);margin:0 0 14px}
+    .hero .highlight{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+    .chip{border:1px solid var(--line);border-radius:999px;padding:8px 12px;background:#fff;font-weight:600;color:var(--muted)}
+    .hero-img{
+      background:#fff;border:1px dashed var(--line);border-radius:16px;padding:24px;text-align:center
+    }
+    /* Grid produk */
+    .section-title{display:flex;align-items:center;justify-content:space-between;margin:26px 0 12px}
+    .products{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:16px
+    }
+    @media (max-width:980px){.products{grid-template-columns:repeat(3,1fr)}.hero{grid-template-columns:1fr}}
+    @media (max-width:640px){.products{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:420px){.products{grid-template-columns:1fr}}
+    .card{
+      background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column
+    }
+    .card-img{aspect-ratio:1/1.1;background:linear-gradient(180deg,#fff,#fff1ef)}
+    .card-body{padding:14px;display:flex;flex-direction:column;gap:8px}
+    .price{font-weight:700}
+    .flair{font-size:.85rem;color:var(--muted)}
+    .card-actions{display:flex;gap:8px;margin-top:auto}
+    /* Keranjang */
+    .cart{
+      position:fixed;right:16px;bottom:16px;background:#fff;border:1px solid var(--line);border-radius:16px;
+      box-shadow:0 8px 30px rgba(0,0,0,.08);width:min(420px,94vw);max-height:70vh;overflow:auto;display:none
+    }
+    .cart.open{display:block}
+    .cart-header{display:flex;justify-content:space-between;align-items:center;padding:14px;border-bottom:1px solid var(--line)}
+    .cart-items{padding:10px;display:flex;flex-direction:column;gap:10px}
+    .cart-item{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:8px}
+    .qty{display:flex;gap:8px;align-items:center}
+    .qty button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px}
+    .cart-footer{padding:14px;border-top:1px solid var(--line)}
+    .total{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-weight:700}
+    /* Checkout */
+    .checkout{
+      margin-top:20px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px
+    }
+    .field{display:grid;gap:6px;margin-bottom:10px}
+    .field input, .field textarea, .field select{
+      border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff
+    }
+    .note{font-size:.85rem;color:var(--muted)}
+    .success{display:none;margin-top:10px;padding:10px;border:1px solid #c7f3ed;border-radius:10px;background:#ecfdf5;color:#0f766e}
+    footer{padding:30px 20px;color:var(--muted);text-align:center}
+  </style>
+</head>
+<body>
+  <header>
+   <div class="nav container">
+      <div class="brand">
+        <div class="logo"></div>
+        <h1>Mochi AR</h1>
+       </div>
+      <div class="nav-right">
+        <button id="cartBtn" class="btn small">Keranjang</button>
+        <a href="#checkout" class="btn primary small">Checkout</a>
+      </div>
+      <div class="">
+        <a href="#produk" id="cartBtn">Produk</a>
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    <section class="hero">
+      <div class="hero-card">
+        <h2>Mochi lembut, isian melimpah</h2>
+        <p>Nikmati mochi premium dengan bahan segar, tekstur kenyal, dan rasa autentik. Pesan online — kirim se-Bandung!</p>
+        <div class="highlight">
+          <span class="chip">Halal</span>
+          <span class="chip">Hygenic</span>
+          <span class="chip">COD tersedia</span>
+          <span class="chip">Diskon paket</span>
+        </div>
+      </div>
+      <div class="hero-img">
+        <p class="flair"> Sejarah Mochi AR : didirikan oleh dua perempuan muda yang memiliki semangat untuk menghadirkan jajanan tradisional Jepang dengan sentuhan lokal dan gaya kekinian. Berawal dari dapur rumah dan semangat untuk berbagi rasa, mereka mulai menjual mochi secara online dan di bazar.Kini, Mochi AR sudah mulai banyak yg mengetahui,dan meminatinya.</p>
+        <img src="mochi.png" alt="">
+        
+        <p class="flair">logo ini menggambarkan tentang  mochi yg dibuat dengan rasa yg enak,lembut,bulat yang menjadikan tradisi atau ciri khas dan kehangatan karna di buat bersama²,dan isian buah yg berbagai macam menambah rasa segar dan enak saat dimakan</p>
+      </div>
+    </section>
+    <section class="hero">
+      <div class="hero-img">
+        <p class="flair"><b>VISI :</b></p>
+        <p class="flair">Menjadi pelopor camilan mochi modern yang digemari semua kalangan, dengan cita rasa otentik dan inovasi tanpa batas.</p>
+        <p class="flair"><b>MISI :</b></p>
+        <p class="flair"> - Menghadirkan mochi berkualitas tinggi dengan bahan-bahan terbaik dan proses higienis.</p>
+        <p class="flair">- Menggabungkan cita rasa tradisional dengan kreasi rasa kekinian yang menarik.</p>
+        <p class="flair">- Memberikan pengalaman kuliner yang menyenangkan melalui kemasan menarik dan pelayanan ramah.</p>
+        <p class="flair">-Mendorong pertumbuhan UMKM lokal dengan memberdayakan tenaga kerja muda dan kreatif.</p>
+        <p class="flair">- Menjadi bagian dari gaya hidup sehat dan bahagia melalui camilan yang lezat dan aman dikonsumsi.</p>
+
+      </div>
+    </section>
+    <section id="produk">
+      <div class="section-title">
+        <h3>Pilihan rasa</h3>
+        <span class="flair">Klik “Tambah” untuk masuk ke keranjang</span>
+      </div>
+
+      <div id="products" class="products"></div>
+    </section>
+
+    <section id="checkout" class="checkout">
+      <h3>Checkout</h3>
+      <p class="note">Isi data pengiriman. Total akan mengikuti isi keranjang.</p>
+      <form id="checkoutForm">
+        <div class="field">
+          <label>Nama lengkap</label>
+          <input type="text" name="name" required placeholder="Nama kamu">
+        </div>
+        <div class="field">
+          <label>No. HP / WhatsApp</label>
+          <input type="tel" name="phone" required placeholder="08xxxxxxxxxx">
+        </div>
+        <div class="field">
+          <label>Alamat lengkap</label>
+          <textarea name="address" rows="3" required placeholder="Jalan, RT/RW, Kelurahan, Kecamatan, Kota"></textarea>
+        </div>
+        <div class="field">
+          <label>Metode pembayaran</label>
+          <select name="payment" required>
+            <option value="cod">Bayar di tempat (COD)</option>
+            <option value="transfer">Transfer bank</option>
+            <option value="ewallet">E-Wallet</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Catatan</label>
+          <input type="text" name="note" placeholder="isiannya apa,request ukuran, dll.">
+        </div>
+        <button type="submit" class="btn primary">Buat pesanan</button>
+        <div id="success" class="success">Pesanan berhasil dibuat! Detail telah disiapkan untuk dikirim via WhatsApp kamu.</div>
+      </form>
+    </section>
+  </main>
+  <div id="cart" class="cart" aria-hidden="true">
+    <div class="cart-header">
+      <strong>Keranjang</strong>
+      <button id="closeCart" class="btn small">Tutup</button>
+    </div>
+    <div id="cartItems" class="cart-items"></div>
+    <div class="cart-footer">
+      <div class="total"><span>Total</span><span id="cartTotal">Rp0</span></div>
+      <div style="display:flex;gap:8px">
+        <button id="clearCart" class="btn small">Bersihkan</button>
+        <a href="#checkout" class="btn primary small">Checkout</a>
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    © 2025 Mochi AR — Bandung, Jawa Barat. IG: @mochi.ar • WhatsApp: 081548385110
+  </footer>
+
+  <script>
+    // ===== DATA PRODUK =====
+    const PRODUCTS = [
+      {id:"mochi-matcha", name:"Mochi Matcha", price:15000, image:"matcha", desc:"Matcha premium, manis seimbang"},
+      {id:"mochi-strawberry", name:"Mochi Strawberry", price:12000, image:"strawberry", desc:"Isi stroberi asli, segar"},
+      {id:"mochi-choco", name:"Mochi Choco Lava", price:18000, image:"choco", desc:"Cokelat pekat, lumer"},
+      {id:"mochi-mango", name:"Mochi Mango", price:18000, image:"mango", desc:"Manis tropis, favorit"},
+      {id:"mochi-bluebery", name:"Mochi bluebery", price:20000, image:"bluebery", desc:"bluebery pilihan, wangi"},
+      {id:"mochi-durian", name:"Mochi Durian", price:22000, image:"durian", desc:"Durian pilihan, wangi"}
+    ];
+    // Utility format Rupiah
+    const rupiah = n => "Rp" + n.toLocaleString("id-ID");
+    // State
+    let cart = JSON.parse(localStorage.getItem("mochi_ar_cart")||"{}");
+
+    // Render produk
+    function productImageSVG(kind){
+      const colors = {
+        matcha:"#8ac28a", strawberry:"#ff7f98", choco:"#7a4a3a", peanut:"#cfa27a",
+        mango:"#ffb34d", sesame:"#3a3a3a", ube:"#8f67b9", durian:"#b2d25e"
+      };
+      const fill = colors[kind] || "#ffb3b3";
+      return `data:image/svg+xml;utf8,
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 250'>
+        <rect width='100%' height='100%' fill='#fff7f5'/>
+        <g>
+          <circle cx='120' cy='120' r='70' fill='${fill}' stroke='#8b5a54' stroke-width='4'/>
+          <circle cx='160' cy='110' r='26' fill='#ff6b6b'/>
+          <text x='24' y='220' font-family='Arial' font-size='16' fill='#7a5d56'>Mochi AR</text>
+        </g>
+      </svg>`;
+    }
+
+    function renderProducts(){
+      const grid = document.getElementById("products");
+      grid.innerHTML = "";
+      PRODUCTS.forEach(p=>{
+        const el = document.createElement("div");
+        el.className = "card";
+        el.innerHTML = `
+         <img src="macammochi.jpg"></img>
+          <div class="card-body">
+            <strong>${p.name}</strong>
+            <span class="flair">${p.desc}</span>
+            <span class="price">${rupiah(p.price)}</span>
+            <div class="card-actions">
+              <button class="btn small" data-id="${p.id}">Tambah</button>
+              <button class="btn small" data-id="${p.id}" data-buy="1">Beli cepat</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(el);
+      });
+      // Bind tombol
+      grid.querySelectorAll("button").forEach(btn=>{
+        btn.addEventListener("click", e=>{
+          const id = btn.getAttribute("data-id");
+          addToCart(id, 1);
+          if(btn.getAttribute("data-buy")) {
+            openCart();
+            location.hash = "#checkout";
+          }
+        });
+      });
+    }
+
+    // Keranjang
+    function addToCart(id, qty=1){
+      const product = PRODUCTS.find(p=>p.id===id);
+      if(!product) return;
+      cart[id] = cart[id] ? {...cart[id], qty:cart[id].qty+qty} : {product, qty};
+      saveCart(); renderCart();
+    }
+    function changeQty(id, delta){
+      if(!cart[id]) return;
+      cart[id].qty += delta;
+      if(cart[id].qty <= 0) delete cart[id];
+      saveCart(); renderCart();
+    }
+    function clearCart(){ cart = {}; saveCart(); renderCart(); }
+    function cartTotal(){
+      return Object.values(cart).reduce((sum,i)=> sum + i.product.price * i.qty, 0);
+    }
+    function saveCart(){ localStorage.setItem("mochi_ar_cart", JSON.stringify(cart)); }
+
+    function renderCart(){
+      const wrap = document.getElementById("cartItems");
+      wrap.innerHTML = "";
+      const items = Object.values(cart);
+      if(items.length===0){
+        wrap.innerHTML = `<p class="flair">Keranjang kosong. Tambahkan mochi favoritmu!</p>`;
+      } else {
+        items.forEach(({product, qty})=>{
+          const row = document.createElement("div");
+          row.className = "cart-item";
+          row.innerHTML = `
+            <img alt="${product.name}" src="${productImageSVG(product.image)}">
+            <div>
+              <strong>${product.name}</strong>
+              <div class="flair">${rupiah(product.price)} • ${product.desc}</div>
+            </div>
+            <div class="qty">
+              <button aria-label="kurangi" onclick="changeQty('${product.id}', -1)">−</button>
+              <span>${qty}</span>
+              <button aria-label="tambah" onclick="changeQty('${product.id}', 1)">+</button>
+            </div>
+          `;
+          wrap.appendChild(row);
+        });
+      }
+      document.getElementById("cartTotal").textContent = rupiah(cartTotal());
+    }
+
+    // Toggle cart
+    const cartPane = document.getElementById("cart");
+    const cartBtn = document.getElementById("cartBtn");
+    const closeCartBtn = document.getElementById("closeCart");
+    function openCart(){ cartPane.classList.add("open"); cartPane.setAttribute("aria-hidden","false"); }
+    function closeCart(){ cartPane.classList.remove("open"); cartPane.setAttribute("aria-hidden","true"); }
+    cartBtn.addEventListener("click", openCart);
+    closeCartBtn.addEventListener("click", closeCart);
+    document.getElementById("clearCart").addEventListener("click", clearCart);
+
+    // Checkout form — contoh kirim ringkasan ke WhatsApp
+    document.getElementById("checkoutForm").addEventListener("submit", (e)=>{
+      e.preventDefault();
+      const form = new FormData(e.target);
+      const data = Object.fromEntries(form.entries());
+      const items = Object.values(cart);
+      if(items.length===0){ alert("Keranjang masih kosong."); return; }
+      const total = rupiah(cartTotal());
+      const lines = [
+        `Halo Mochi AR! Saya ingin pesan:`,
+        ...items.map(i=>`- ${i.product.name} x${i.qty} (${rupiah(i.product.price*i.qty)})`),
+        `Total: ${total}`,
+        `Nama: ${data.name}`,
+        `HP/WA: ${data.phone}`,
+        `Alamat: ${data.address}`,
+        `Pembayaran: ${data.payment}`,
+        data.note ? `Catatan: ${data.note}` : null
+      ].filter(Boolean);
+      const message = encodeURIComponent(lines.join("\n"));
+      // Ganti nomor di bawah dengan nomor WhatsApp bisnis kamu (format internasional tanpa +, contoh 62812xxxx)
+      const phone = "62812XXXXXXX";
+      const waUrl = `https://wa.me/${phone}?text=${message}`;
+      window.open(waUrl, "_blank");
+      document.getElementById("success").style.display = "block";
+    });
+
+    // Init
+    renderProducts(); renderCart();
+   
+  </script>
+</body>
+</html>
